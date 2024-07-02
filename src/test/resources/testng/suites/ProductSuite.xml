@@ -1,0 +1,11 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="ProductSuite" verbose="1">
+    <listeners>
+        <listener class-name="com.tests.common.listeners.TestListener"/>
+    </listeners>
+    <test name="Tests">
+        <classes>
+            <class name="com.tests.products.ProductValidation"/>
+        </classes>
+    </test>
+</suite>

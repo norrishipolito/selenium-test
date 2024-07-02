@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="MasterSuite">
+    <listeners>
+        <listener class-name="com.tests.common.listeners.TestListener" />
+    </listeners>
+    <suite-files>
+        <suite-file path="suites/ProductSuite.xml" />
+    </suite-files>
+</suite>
