@@ -1,11 +1,11 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite name="ProductSuite" verbose="1">
+<suite name="AuthenticationSuite" verbose="1">
     <listeners>
         <listener class-name="com.tests.common.listeners.TestListener"/>
     </listeners>
-    <test name="Page Validation Test">
+    <test name="Login Test">
         <classes>
-            <class name="com.tests.products.ProductValidation"/>
+            <class name="com.tests.auth.LoginTest"/>
         </classes>
     </test>
 </suite>

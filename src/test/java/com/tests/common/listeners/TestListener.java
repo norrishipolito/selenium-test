@@ -21,7 +21,7 @@ public class TestListener implements ITestListener {
     }
     @Override
     public void onStart(ITestContext context) {
-        System.out.println("Test Suite is starting...");
+        System.out.println(context.getSuite().getName()+" is starting...");
     }
 
     @Override
