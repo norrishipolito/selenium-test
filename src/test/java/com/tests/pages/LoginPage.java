@@ -35,4 +35,9 @@ public class LoginPage {
     public WebElement GetPageDisplay(){
         return driver.findElement(By.id("root"));
     }
+    public void loginStandardUser(){
+        InputUsername("standard_user");
+        InputPassword("secret_sauce");
+        ClickLoginButton();
+    }
 }

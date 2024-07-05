@@ -4,6 +4,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -35,6 +37,10 @@ public class ProductsPage {
         DESCENDING
     }
 
+    @FindBy(css = ".inventory_item" )
+    private List<WebElement> allProducts;
+
+
     private final WebDriver driver;
     private final WebDriverWait wait;
     private final Actions action;
@@ -48,6 +54,7 @@ public class ProductsPage {
         this.driver = driver;
         action = new Actions(driver);
         wait = new WebDriverWait(driver, Duration.ofSeconds(delay));
+        PageFactory.initElements(driver, this);
     }
 
     public void ClickGear() {
@@ -64,6 +71,10 @@ public class ProductsPage {
     public void NavigateToBags() {
         ClickGear();
         ClickBags();
+    }
+
+    public WebElement getCartTotalItem(){
+        return driver.findElement(By.cssSelector(".shopping_cart_badge"));
     }
 
     public void ScrollToBottom() {
@@ -115,10 +126,17 @@ public class ProductsPage {
         ChangeSortBy(sortBy);
     }
 
-    public void getAllShirts() {
-        List<WebElement> allProducts = driver.findElements(By.cssSelector(".inventory-item"));
+    public void addToCartByProduct(String productName) {
+//        List<WebElement> allProducts = driver.findElements(By.className())
         for (WebElement product : allProducts) {
-            product.
+          String itemName = product.findElement(By.cssSelector(".inventory_item_name")).getText();
+          if(itemName.contains(productName)){
+            product.findElement(By.cssSelector(".btn")).click();
+          }
         }
+    }
+
+    public void fillCheckout(){
+
     }
 }

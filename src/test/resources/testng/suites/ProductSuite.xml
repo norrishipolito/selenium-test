@@ -3,9 +3,10 @@
     <listeners>
         <listener class-name="com.tests.common.listeners.TestListener"/>
     </listeners>
-    <test name="Page Validation Test">
+    <test name="End to end Test">
+        <parameter name="productType" value="T-Shirt"/>
         <classes>
-            <class name="com.tests.products.ProductValidation"/>
+            <class name="com.tests.products.CheckOutTest"/>
         </classes>
     </test>
 </suite>
