@@ -16,8 +16,10 @@ import java.util.List;
 
 public class ProductsPage {
     public enum SortType {
-        PRODUCT_NAME("Product Name"),
-        PRICE("Price");
+        PRODUCT_NAME_ASC("Name (A to Z)"),
+        PRODUCT_NAME_DESC("Name (Z to A)"),
+        PRICE_ASC("Price (low to high)"),
+        PRICE_DESC("Price (high to low)");
 
         private final String type;
 
@@ -27,28 +29,43 @@ public class ProductsPage {
 
         }
 
-        public String getType() {
+        public String getSortType() {
             return this.type;
         }
     }
 
-    public enum SortBy {
-        ASCENDING,
-        DESCENDING
-    }
 
     @FindBy(css = ".inventory_item" )
     private List<WebElement> allProducts;
+    @FindBy(css="#logout_sidebar_link")
+    public WebElement logoutButton;
+    @FindBy(css="#react-burger-menu-btn")
+    public WebElement hamburgerButton;
 
+    @FindBy(css=".inventory_list")
+    public WebElement inventoryGrid;
+
+    @FindBy(css="#header_container")
+    public WebElement header;
+
+    @FindBy(css=".footer")
+    public WebElement footer;
+
+    @FindBy(css=".inventory_container")
+    public WebElement main;
+
+    @FindBy(css=".inventory_item")
+    public List<WebElement> totalItems;
+
+
+    @FindBy(xpath="/html/body/div/div/div/div[1]/div[2]/div/span/select")
+    public WebElement sortButton;
 
     private final WebDriver driver;
     private final WebDriverWait wait;
     private final Actions action;
     private final long delay = 3;
-    private final String gear_xpath = "/html/body/div[2]/div[1]/div/div[2]/nav/ul/li[4]/a";
-    private final String bags_xpath = "/html/body/div[2]/main/div[4]/div[2]/div[1]/div[2]/dl/dd/ol/li[1]/a";
-    private final String next_button_xpath = "/html/body/div[2]/main/div[3]/div[1]/div[4]/div[2]/ul/li[3]/a";
-    private final String home = "/html/body/div[2]/header/div[2]/a/img";
+
 
     public ProductsPage(WebDriver driver) {
         this.driver = driver;
@@ -57,73 +74,26 @@ public class ProductsPage {
         PageFactory.initElements(driver, this);
     }
 
-    public void ClickGear() {
-        WebElement gear = driver.findElement(By.xpath(gear_xpath));
-        gear.click();
-
-    }
-
-    public void ClickBags() {
-        WebElement bags = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(bags_xpath)));
-        bags.click();
-    }
-
-    public void NavigateToBags() {
-        ClickGear();
-        ClickBags();
+    public void ClickSort(){
+        sortButton.click();
     }
 
     public WebElement getCartTotalItem(){
         return driver.findElement(By.cssSelector(".shopping_cart_badge"));
     }
 
-    public void ScrollToBottom() {
-        action.moveByOffset(0, Integer.MAX_VALUE);
-    }
-
-    public void NavigateToHome() {
-        WebElement home_logo = driver.findElement(By.xpath(home));
-        home_logo.click();
-    }
-
-    public void ClickNextPagination() throws InterruptedException {
-        WebElement nextButton = driver.findElement(By.xpath(next_button_xpath));
-        Thread.sleep(delay);
-        nextButton.click();
-    }
-
-    public void ClickSortDropDown() {
-
-        WebElement sorterDD = driver.findElement(By.className("sorter-options"));
-        sorterDD.click();
-    }
 
     public void ChangeSortTypeDropDown(SortType sortType) {
-        WebElement sorterDD = driver.findElement(By.className("sorter-options"));
-        Select select = new Select(sorterDD);
+        Select select = new Select(sortButton);
 
-        select.selectByVisibleText(sortType.getType());
-
-    }
-
-    public void ChangeSortBy(SortBy sortBy) {
-        WebElement sorterByAction = driver.findElement(By.className("sorter-action"));
-        String title = sorterByAction.getAttribute("title");
-
-        if (title.contains("Descending") && sortBy.equals(SortBy.DESCENDING)) {
-            sorterByAction.click();
-        }
-
-        if (title.contains("Ascending") && sortBy.equals(SortBy.ASCENDING)) {
-            sorterByAction.click();
-        }
+        select.selectByVisibleText(sortType.getSortType());
 
     }
 
-    public void ChangeSort(SortType sortType, SortBy sortBy) {
-        ClickSortDropDown();
+
+    public void ChangeSort(SortType sortType) {
+        ClickSort();
         ChangeSortTypeDropDown(sortType);
-        ChangeSortBy(sortBy);
     }
 
     public void addToCartByProduct(String productName) {
@@ -136,7 +106,8 @@ public class ProductsPage {
         }
     }
 
-    public void fillCheckout(){
-
+    public void logout() {
+        hamburgerButton.click();
+        logoutButton.click();
     }
 }

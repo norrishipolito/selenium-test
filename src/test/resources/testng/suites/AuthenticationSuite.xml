@@ -3,9 +3,17 @@
     <listeners>
         <listener class-name="com.tests.common.listeners.TestListener"/>
     </listeners>
-    <test name="Login Test">
+    <test name="Multiple Login Test">
         <classes>
-            <class name="com.tests.auth.LoginTest"/>
+            <class name="com.tests.auth.MultipleLoginTest"/>
         </classes>
     </test>
+    <test name="Authentication Workflow Test">
+        <parameter name="username" value="standard_user"/>
+        <parameter name="password" value="secret_sauce"/>
+        <classes>
+            <class name="com.tests.auth.WorkflowTest"/>
+        </classes>
+    </test>
+
 </suite>

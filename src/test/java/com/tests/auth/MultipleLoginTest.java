@@ -3,7 +3,6 @@ package com.tests.auth;
 import com.tests.common.BaseTest;
 import com.tests.common.listeners.TestListener;
 import com.tests.pages.LoginPage;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.*;
 import com.tests.common.utilities.DataProviderUtil;
@@ -12,7 +11,7 @@ import org.testng.asserts.SoftAssert;
 import java.time.Duration;
 
 @Listeners(com.tests.common.listeners.TestListener.class)
-public class LoginTest extends BaseTest {
+public class MultipleLoginTest extends BaseTest {
     private LoginPage loginPage;
     private SoftAssert softAssert;
     private final long delay = 3;
@@ -23,13 +22,16 @@ public class LoginTest extends BaseTest {
         return DataProviderUtil.LoginData();
     }
 
-    @BeforeTest
+    @BeforeClass
     public void TestSetup(){
+
         softAssert = new SoftAssert();
         loginPage = new LoginPage(driver);
-//        wait = new WebDriverWait(driver, Duration.ofSeconds(delay));
+        TestListener.getTest().info("Starting Multiple Login Test");
+        TestListener.getTest().getModel().setDescription("Test All Existing User");
+        TestListener.getTest().assignCategory("Data Driven Test");
     }
-    @AfterTest
+    @AfterClass
     public void tearDownMethod() {
         if (driver != null) {
             driver.quit();
@@ -38,10 +40,11 @@ public class LoginTest extends BaseTest {
     @Test(dataProvider = "LoginData")
     public void LoginCheck(String username, String password){
         driver.get("https://www.saucedemo.com/");
-        test = TestListener.getTest();
+        test = TestListener.getNode();
+        test.getModel().setName(String.format("Login Check -> Username: %s Password: %s",username,password));
+        test.assignCategory("");
         test.info("Login Test Starting:");
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
-//        wait.until(ExpectedConditions.visibilityOf(loginPage.GetPageDisplay()));
         loginPage.InputUsername(username);
         loginPage.InputPassword(password);
 

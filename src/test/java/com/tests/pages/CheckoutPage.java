@@ -9,6 +9,7 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.List;
 
 public class CheckoutPage {
     private final WebDriver driver;
@@ -16,13 +17,13 @@ public class CheckoutPage {
     private final Actions action;
     private final long delay = 2000;
 
-    @FindBy(id="first-name")
+    @FindBy(css="#first-name")
     public WebElement firstName;
 
-    @FindBy(id="last-name")
+    @FindBy(css="#last-name")
     public WebElement lastName;
 
-    @FindBy(id="postal-code")
+    @FindBy(css="#postal-code")
     public WebElement postalCode;
 
     @FindBy(css=".submit-button")
@@ -30,6 +31,21 @@ public class CheckoutPage {
 
     @FindBy(id="finish")
     public WebElement finish;
+
+    @FindBy(css=".cart_item")
+    public List<WebElement> cartItems;
+
+    @FindBy(css=".title")
+    public WebElement pageTitle;
+
+    @FindBy(css=".summary_tax_label")
+    public WebElement taxLabel;
+
+    @FindBy(css=".summary_total_label")
+    public WebElement totalLabel;
+
+    @FindBy(css=".complete-header")
+    public WebElement completeHeader;
 
     public CheckoutPage(WebDriver driver){
         this.driver = driver;
@@ -50,4 +66,18 @@ public class CheckoutPage {
     public void clickFinish(){
         this.finish.click();
     }
+
+    public double parseAmount(String str){
+        String[] splitPrice = str.split("\\$");
+        return Double.parseDouble(splitPrice[1]);
+    }
+
+    public double getTax(){
+        return parseAmount(taxLabel.getText());
+    }
+
+    public double getTotal(){
+        return parseAmount(totalLabel.getText());
+    }
+
 }

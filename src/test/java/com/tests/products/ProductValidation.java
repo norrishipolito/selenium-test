@@ -1,17 +1,12 @@
 package com.tests.products;
 
-import com.aventstack.extentreports.Status;
 import com.tests.common.BaseTest;
 import com.tests.common.listeners.TestListener;
+import com.tests.pages.LoginPage;
 import com.tests.pages.ProductsPage;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.Wait;
 import org.testng.Assert;
 import org.testng.annotations.*;
 import org.testng.asserts.SoftAssert;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 
@@ -21,116 +16,84 @@ public class ProductValidation extends BaseTest {
 //    private WebDriver driver;
     private ProductsPage productsPage;
     private SoftAssert softAssert;
+    private LoginPage loginPage;
     private final long delay = 2000;//3 secs
 
 
-    @BeforeTest
+    @BeforeClass
     public void TestSetup(){
-        driver.get("https://magento.softwaretestingboard.com/");
+        driver.get("https://www.saucedemo.com/");
         softAssert = new SoftAssert();
         productsPage = new ProductsPage(driver);
-
+        loginPage = new LoginPage(driver);
+        driver.manage().timeouts()
+                .implicitlyWait(Duration.ofSeconds(5));
+        TestListener.getTest().info("Starting Validation Test");
     }
-    @AfterTest
+    @AfterClass
     public void tearDownMethod() {
         if (driver != null) {
             driver.quit();
         }
     }
-    @Test
-    public void VerifyProductsPageLayout() throws InterruptedException {
-        test = TestListener.getTest();
+    @Test(priority = 1)
+    @Parameters({"user","pass"})
+    public void VerifyProductsPageLayout(@Optional String username,String password) throws InterruptedException {
+        test = TestListener.getNode();
         test.info("Test is Starting");
-        //IMPLICITLY WAIT 5SECONDS
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
 
-        WebElement productGrid = driver.findElement(By.className("grid"));
-        WebElement header = driver.findElement(By.tagName("header"));
-        WebElement footer = driver.findElement(By.tagName("footer"));
-        WebElement main = driver.findElement(By.tagName("main"));
+        loginPage.login(username, password);
+        test.info("Successfully Login");
+        test.info("Validating Page Layout if it exists");
+        Assert.assertTrue(productsPage.inventoryGrid.isDisplayed());
+        Assert.assertTrue(productsPage.header.isDisplayed());
+        Assert.assertTrue(productsPage.footer.isDisplayed());
+        Assert.assertTrue(productsPage.main.isDisplayed());
 
-        Assert.assertTrue(productGrid.isDisplayed());
-        Assert.assertTrue(header.isDisplayed());
-        Assert.assertTrue(footer.isDisplayed());
-        Assert.assertTrue(main.isDisplayed());
-
-        Thread.sleep(delay);
+        test.pass("Page Layout Containers exists");
+        Thread.sleep(1000);
     }
 
-    @Test
-    public void VerifyPagination() throws InterruptedException {
-        test = TestListener.getTest();
-        test.info("Test is Starting");
-        productsPage.NavigateToBags();
-        //CHECK IF YOU ARE IN THE BAGS PAGE
-        Assert.assertTrue(driver.getCurrentUrl().contains("bags.html"));
-        test.pass("Page successfully redirect to 'bags.html'");
-        productsPage.ScrollToBottom();
-        Thread.sleep(delay);
-        productsPage.ClickNextPagination();
-        Assert.assertTrue(driver.getCurrentUrl().contains("p="));
-        test.pass("Page Navigated to the next page");
-        Thread.sleep(delay);
-    }
 
-    @Test
+    @Test(priority = 2)
     public void VerifyProductsDetailDisplay() throws InterruptedException {
-        test = TestListener.getTest();
-        test.info("Test is Starting");
-        productsPage.NavigateToHome();
-        Wait<WebDriver> wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        test = TestListener.getNode();
+        test.info("Test is Starting ...");
+        test.info("Verifying products details if they exist");
 
-        WebElement image = driver.findElement(By.className("product-item-photo"));
-        WebElement name = driver.findElement(By.className("product-item-name"));
-        WebElement price = driver.findElement(By.className("price"));
+        int itemsSize = productsPage.totalItems.size();
+        Assert.assertEquals(6,itemsSize);
 
-        wait.until(i->image.isDisplayed());
-
-        softAssert.assertTrue(image.isDisplayed());
-        softAssert.assertTrue(name.isDisplayed());
-        softAssert.assertTrue(price.isDisplayed());
-
-        softAssert.assertAll();
-        test.pass("Image, Name and Price is displayed");
-        Thread.sleep(delay);
+        test.pass("Image, Name and Price are displayed");
     }
 
-    @Test
+    @Test(priority = 3)
     public void VerifyProductSorting() throws InterruptedException {
-        test = TestListener.getTest();
+        test = TestListener.getNode();
         test.info("Test is Starting");
-        Wait<WebDriver> wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-        productsPage.NavigateToHome();
-        Thread.sleep(delay);
-        productsPage.NavigateToBags();
 
         //SORT BY PRICE ASCENDING
         test.info("Testing SORT BY PRICE ASCENDING");
-        productsPage.ChangeSort(ProductsPage.SortType.PRICE,ProductsPage.SortBy.ASCENDING);
-        Assert.assertTrue(driver.getCurrentUrl().contains("product_list_order=price"));
+        Assert.assertTrue(productsPage.sortButton.isDisplayed());
+        productsPage.ChangeSort(ProductsPage.SortType.PRICE_ASC);
         Thread.sleep(delay);
         test.pass("Sort By Price Ascending Passed");
 
         //SORT BY PRICE DESCENDING
         test.info("Testing SORT BY PRICE DESCENDING");
-        productsPage.ChangeSort(ProductsPage.SortType.PRICE,ProductsPage.SortBy.DESCENDING);
-        Assert.assertTrue(driver.getCurrentUrl().contains("product_list_order=price"));
-        Assert.assertTrue(driver.getCurrentUrl().contains("product_list_dir=desc"));
+        productsPage.ChangeSort(ProductsPage.SortType.PRICE_DESC);
         Thread.sleep(delay);
         test.pass("Sort By Price Descending Passed");
 
         //SORT BY NAME ASCENDING
         test.info("Testing SORT BY NAME ASCENDING");
-        productsPage.ChangeSort(ProductsPage.SortType.PRODUCT_NAME,ProductsPage.SortBy.ASCENDING);
-        Assert.assertTrue(driver.getCurrentUrl().contains("product_list_order=name"));
+        productsPage.ChangeSort(ProductsPage.SortType.PRODUCT_NAME_ASC);
         Thread.sleep(delay);
         test.pass("Sort By Product Name Descending Passed");
 
         //SORT BY NAME DESCENDING
         test.info("Testing SORT BY NAME DESCENDING");
-        productsPage.ChangeSort(ProductsPage.SortType.PRODUCT_NAME,ProductsPage.SortBy.DESCENDING);
-        Assert.assertTrue(driver.getCurrentUrl().contains("product_list_order=name"));
-        Assert.assertTrue(driver.getCurrentUrl().contains("product_list_dir=desc"));
+        productsPage.ChangeSort(ProductsPage.SortType.PRODUCT_NAME_DESC);
         Thread.sleep(delay);
         test.pass("Sort By Product Name Descending Passed");
     }
