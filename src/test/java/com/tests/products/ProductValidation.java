@@ -17,7 +17,7 @@ public class ProductValidation extends BaseTest {
     private ProductsPage productsPage;
     private SoftAssert softAssert;
     private LoginPage loginPage;
-    private final long delay = 2000;//3 secs
+    private final long delay = 2000;//2 secs
 
 
     @BeforeClass

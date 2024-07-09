@@ -4,9 +4,9 @@
         <listener class-name="com.tests.common.listeners.TestListener" />
     </listeners>
     <suite-files>
-        <suite-file path="suites/ProductSuite.xml" />
+        <suite-file path="suites/AuthenticationSuite.xml" />
     </suite-files>
     <suite-files>
-        <suite-file path="suites/AuthenticationSuite.xml" />
+        <suite-file path="suites/ProductSuite.xml" />
     </suite-files>
 </suite>

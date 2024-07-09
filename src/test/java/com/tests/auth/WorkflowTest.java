@@ -16,7 +16,7 @@ public class WorkflowTest extends BaseTest {
     private LoginPage loginPage;
     private ProductsPage productsPage;
     private SoftAssert softAssert;
-    private final long delay=3;
+    private final long delay=1000;
     private WebDriverWait wait;
 
     @BeforeClass
@@ -34,6 +34,10 @@ public class WorkflowTest extends BaseTest {
         if (driver != null) {
             driver.quit();
         }
+    }
+    @AfterMethod
+    public void addDelay() throws Exception{
+        Thread.sleep(delay);
     }
     @Test(priority = 1)
     @Parameters({"username","password"})

@@ -6,14 +6,17 @@ import com.aventstack.extentreports.markuputils.MarkupHelper;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.Status;
+import org.apache.logging.log4j.LogManager;
 import org.testng.ITestListener;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
+import org.apache.logging.log4j.Logger;
 
 public class TestListener implements ITestListener {
     private static ExtentReports extent;
     private static ThreadLocal<ExtentTest> test = new ThreadLocal<>();
     private static ExtentTest node;
+    private static final Logger logger = LogManager.getLogger(TestListener.class);;
     static{
         extent = new ExtentReports();
         ExtentSparkReporter report = new ExtentSparkReporter("target/reports/report.html");
@@ -25,12 +28,12 @@ public class TestListener implements ITestListener {
         String testName = context.getCurrentXmlTest().getName();
         ExtentTest extentTest = extent.createTest(testName);
         test.set(extentTest);
-        System.out.println(suiteName+" is starting...");
+        logger.info(String.format("%s is starting...", suiteName));
     }
 
     @Override
     public void onFinish(ITestContext context) {
-        System.out.println("Test Suite is ending...");
+        logger.info("Test Suite is ending...");
         extent.flush();
         test.get().info("Test is Finished");
     }
@@ -38,7 +41,7 @@ public class TestListener implements ITestListener {
     @Override
     public void onTestStart(ITestResult result) {
         String testName = result.getMethod().getMethodName();
-        System.out.println("Starting Test: " + testName );
+        logger.info(String.format("Starting Test: %s", testName));
         node = test.get().createNode(testName);
 
     }
@@ -46,20 +49,20 @@ public class TestListener implements ITestListener {
     @Override
     public void onTestSuccess(ITestResult result) {
         node.log(Status.PASS, MarkupHelper.createLabel(result.getName() + " Test Passed", ExtentColor.GREEN));
-        System.out.println("Test Passed: " + result.getMethod().getMethodName());
+        logger.info(String.format("Test Passed: %s", result.getMethod().getMethodName()));
     }
 
     @Override
     public void onTestFailure(ITestResult result) {
         node.log(Status.FAIL, MarkupHelper.createLabel(result.getName() + " Test Failed due to below issues:", ExtentColor.RED));
         node.fail(result.getThrowable());
-        System.out.println("Test Failed: " + result.getMethod().getMethodName());
+        logger.error(String.format("Test Failed: %s", result.getMethod().getMethodName()));
     }
 
     @Override
     public void onTestSkipped(ITestResult result) {
         node.log(Status.SKIP, MarkupHelper.createLabel(result.getName() + " Test Skipped", ExtentColor.ORANGE));
-        System.out.println("Test Skipped: " + result.getMethod().getMethodName());
+        logger.warn(String.format("Test Skipped: %s", result.getMethod().getMethodName()));
     }
     public static ExtentTest getTest() {
         return test.get();

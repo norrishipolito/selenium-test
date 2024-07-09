@@ -47,6 +47,9 @@ public class CheckoutPage {
     @FindBy(css=".complete-header")
     public WebElement completeHeader;
 
+    @FindBy(css="#cancel")
+    public WebElement cancelButton;
+
     public CheckoutPage(WebDriver driver){
         this.driver = driver;
         action = new Actions(driver);
@@ -67,6 +70,12 @@ public class CheckoutPage {
         this.finish.click();
     }
 
+    public void clickCancel(){
+        this.cancelButton.click();
+    }
+
+
+    //HELPER FUNCTIONS
     public double parseAmount(String str){
         String[] splitPrice = str.split("\\$");
         return Double.parseDouble(splitPrice[1]);

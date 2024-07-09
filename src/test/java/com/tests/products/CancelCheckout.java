@@ -15,39 +15,40 @@ import org.testng.asserts.SoftAssert;
 import java.time.Duration;
 import java.util.List;
 
+@Listeners(com.tests.common.listeners.TestListener.class)
+public class CancelCheckout extends BaseTest {
 
-public class CheckOutTest extends BaseTest {
     private ProductsPage productsPage;
     private CartPage cartPage;
     private CheckoutPage checkoutPage;
     private SoftAssert softAssert;
     private LoginPage loginPage;
-
-    private final long delay = 2000;
+    private final long delay = 1000;//2 secs
 
     @BeforeClass
     public void TestSetup(){
         driver.get("https://www.saucedemo.com/");
         softAssert = new SoftAssert();
-        loginPage = new LoginPage(driver);
         productsPage = new ProductsPage(driver);
+        loginPage = new LoginPage(driver);
         cartPage = new CartPage(driver);
         checkoutPage = new CheckoutPage(driver);
         driver.manage().timeouts()
                 .implicitlyWait(Duration.ofSeconds(5));
-        TestListener.getTest().info("Starting Checkout End to End Test");
+        TestListener.getTest().info("Starting Cancel Checkout Test");
     }
     @AfterClass
-    public void tearDownMethod(){
-        if (driver != null){
+    public void tearDownMethod() {
+        if (driver != null) {
             driver.quit();
         }
     }
     @AfterMethod
     public void addDelay() throws Exception{
-        Thread.sleep(2000);
+        Thread.sleep(delay);
     }
-    @Test(priority = 1)
+
+    @Test(priority = 0)
     public void LoginAsStandardUser(){
         test = TestListener.getNode();
         test.info("Starting test...");
@@ -56,23 +57,22 @@ public class CheckOutTest extends BaseTest {
         Assert.assertTrue(driver.getCurrentUrl().contains("inventory.html"));
         test.pass("Successfully Login");
     }
-    @Test(priority = 2)
+    @Test(priority = 1)
     @Parameters({"productType"})
-    public void CheckoutTShirts(@Optional String productType){
+    public void CheckoutTShirts(@Optional("Sauce Labs") String productType){
         test= TestListener.getNode();
         test.info("Starting test...");
         test.info("Parameters: "+productType);
         //ADD TO CART ALL TSHIRTS
         productsPage.addToCartByProduct(productType);
         String totalItem= productsPage.getCartTotalItem().getText();
-        Assert.assertEquals(Integer.parseInt(totalItem),2);
+        Assert.assertEquals(Integer.parseInt(totalItem),5);
         test.pass("Added "+totalItem+" items in the cart");
-
     }
 
-    @Test(priority = 3)
+    @Test(priority = 2)
     @Parameters({"productType"})
-    public void ProceedToCart(@Optional String productType){
+    public void ProceedToCart(@Optional("Sauce Labs") String productType){
         test = TestListener.getNode();
         test.info("Starting test...");
         test.info("Parameters: "+productType);
@@ -88,17 +88,15 @@ public class CheckOutTest extends BaseTest {
             Assert.assertTrue(itemName.contains(productType));
         }
         test.pass("All items in the cart are "+productType);
-
     }
-
-    @Test(priority = 4)
+    @Test(priority = 3)
     public void ProceedToCheckout(){
         cartPage.clickCheckout();
         Assert.assertTrue(checkoutPage.pageTitle.isDisplayed());
         test.pass("Successfully Navigated to Checkout Page");
     }
 
-    @Test(priority = 5)
+    @Test(priority = 4)
     public void InputCheckoutInformation() throws InterruptedException {
         String firstName = "John";
         String lastName = "Doe";
@@ -118,42 +116,25 @@ public class CheckOutTest extends BaseTest {
         test.pass("Successfully Navigated to Confirmation Page");
     }
 
-    @Test (priority = 6)
-    @Parameters({"productType"})
-    public void CheckoutFinalValidation(String productType){
+    @Test(priority = 5)
+    public void CancelOrder() throws InterruptedException {
         test = TestListener.getNode();
-        test.info("Starting test...");
-        test.info("Parameters: "+productType);
-        Assert.assertTrue(driver.getCurrentUrl().contains("checkout-step-two.html"),"Page Error!");
-        test.pass("Page is on the final step of checkout");
-        List<WebElement> cartItems = checkoutPage.cartItems;
-        double totalPrice = 0;
-
-        for(WebElement item: cartItems){
-            String itemName = item.findElement(By.cssSelector(".inventory_item_name")).getText();
-            String price = item.findElement(By.cssSelector(".inventory_item_price")).getText();
-            Assert.assertTrue(itemName.contains(productType));
-            totalPrice = totalPrice + checkoutPage.parseAmount(price);
-        }
-        Assert.assertEquals(cartItems.size(),2);
-        test.pass("There are 2 items in the cart");
-        test.pass("All items in the cart are "+productType);
-
-        double tax = checkoutPage.getTax();
-        totalPrice=tax + totalPrice;
-
-
-        Assert.assertEquals(checkoutPage.getTotal(),totalPrice);
-        test.pass("Total Price is Correct");
-        checkoutPage.clickFinish();
+        test.info("Starting test ...");
+        checkoutPage.clickCancel();
+        Assert.assertTrue(driver.getCurrentUrl().contains("inventory.html"));
+        test.pass("Canceled Button Works");
+        cartPage.clickCart();
+        cartPage.removeAllInCart();
+        Assert.assertTrue(cartPage.cartList.findElements(By.cssSelector(".cart_item")).isEmpty());
+        test.pass("Removed All Items in the Cart");
+    }
+    @Test(priority = 6)
+    public void Logout() throws InterruptedException {
+        test = TestListener.getNode();
+        test.info("Starting Test ...");
+        productsPage.logout();
+        Assert.assertEquals(driver.getCurrentUrl(),"https://www.saucedemo.com/");
+        test.pass("Successfully Logout");
     }
 
-    @Test(priority = 7)
-    public void ValidateSuccessCheckout(){
-        test = TestListener.getNode();
-        test.info("Starting test...");
-        Assert.assertTrue(checkoutPage.completeHeader.isDisplayed());
-        Assert.assertEquals(checkoutPage.completeHeader.getText(),"Thank you for your order!");
-        test.pass("Success Order Complete.");
-    }
 }

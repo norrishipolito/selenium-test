@@ -3,17 +3,22 @@
     <listeners>
         <listener class-name="com.tests.common.listeners.TestListener"/>
     </listeners>
+    <test name="Product Validation Test">
+        <parameter name="user" value="standard_user"/>
+        <parameter name="pass" value="secret_sauce"/>
+        <classes>
+            <class name="com.tests.products.ProductValidation"/>
+        </classes>
+    </test>
     <test name="Checkout Test">
         <parameter name="productType" value="T-Shirt"/>
         <classes>
             <class name="com.tests.products.CheckOutTest"/>
         </classes>
     </test>
-    <test name="Product Validation Test">
-        <parameter name="user" value="standard_user"/>
-        <parameter name="pass" value="secret_sauce"/>
+    <test name="Cancel Checkout Test">
         <classes>
-            <class name="com.tests.products.ProductValidation"/>
+            <class name="com.tests.products.CancelCheckout"/>
         </classes>
     </test>
 </suite>

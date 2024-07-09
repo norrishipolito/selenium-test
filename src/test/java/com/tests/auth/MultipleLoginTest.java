@@ -4,6 +4,7 @@ import com.tests.common.BaseTest;
 import com.tests.common.listeners.TestListener;
 import com.tests.pages.LoginPage;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 import org.testng.annotations.*;
 import com.tests.common.utilities.DataProviderUtil;
 import org.testng.asserts.SoftAssert;
@@ -49,8 +50,7 @@ public class MultipleLoginTest extends BaseTest {
         loginPage.InputPassword(password);
 
         loginPage.ClickLoginButton();
-
-//        driver.quit();
+        Assert.assertTrue(driver.getCurrentUrl().contains("inventory.html"));
     }
 
 }
