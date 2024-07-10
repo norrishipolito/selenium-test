@@ -24,18 +24,18 @@ public class TestListener implements ITestListener {
     }
     @Override
     public void onStart(ITestContext context) {
-        String suiteName = context.getSuite().getName();
         String testName = context.getCurrentXmlTest().getName();
         ExtentTest extentTest = extent.createTest(testName);
         test.set(extentTest);
-        logger.info(String.format("%s is starting...", suiteName));
+        logger.info(String.format("%s Case is starting...", testName));
     }
 
     @Override
     public void onFinish(ITestContext context) {
         logger.info("Test Suite is ending...");
-        extent.flush();
         test.get().info("Test is Finished");
+        extent.flush();
+
     }
 
     @Override
@@ -55,7 +55,6 @@ public class TestListener implements ITestListener {
     @Override
     public void onTestFailure(ITestResult result) {
         node.log(Status.FAIL, MarkupHelper.createLabel(result.getName() + " Test Failed due to below issues:", ExtentColor.RED));
-        node.fail(result.getThrowable());
         logger.error(String.format("Test Failed: %s", result.getMethod().getMethodName()));
     }
 

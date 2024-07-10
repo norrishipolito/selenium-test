@@ -129,7 +129,7 @@ public class CancelCheckout extends BaseTest {
         test.pass("Removed All Items in the Cart");
     }
     @Test(priority = 6)
-    public void Logout() throws InterruptedException {
+    public void Logout() {
         test = TestListener.getNode();
         test.info("Starting Test ...");
         productsPage.logout();
